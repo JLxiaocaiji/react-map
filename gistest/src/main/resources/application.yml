@@ -1,0 +1,46 @@
+# 1. 服务器配置（Tomcat 内置服务器）
+server:
+  port: 8080 # 项目启动端口（默认 8080，可修改为 8081、9090 等）
+  servlet:
+    context-path: / # 项目访问根路径（默认 /，如需前缀可改为 /api）
+
+# 2. PostgreSQL 数据库配置（替换为你的数据库实际信息）
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/demo_db # 数据库连接地址（localhost:5432 为默认地址，demo_db 为库名）
+    username: postgres # 数据库用户名（默认 postgres）
+    password: 123456 # 数据库密码（替换为你的实际密码）
+    driver-class-name: org.postgresql.Driver # 驱动类名（PostgreSQL 固定值，无需修改）
+
+  # 3. Redis 缓存配置（本地 Redis 默认配置，按需修改）
+  redis:
+    host: localhost # Redis 服务地址（本地默认 localhost）
+    port: 6379 # Redis 端口（默认 6379）
+    timeout: 3000ms # 连接超时时间（3 秒，单位 ms）
+    database: 0 # 操作的 Redis 数据库（默认 0 库，共 16 个库 0-15）
+    # password: 123456 # 若 Redis 设置了密码，取消注释并填写密码
+    jedis:
+      pool:
+        max-active: 8 # 连接池最大连接数（使用负值表示没有限制）
+        max-wait: -1  # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 8   # 连接池中的最大空闲连接
+        min-idle: 0   # 连接池中的最小空闲连接
+
+  # 4. Springdoc OpenAPI 配置（Swagger UI 文档）
+  doc:
+    api-docs:
+      path: /api-docs # API 文档数据接口路径（默认 /api-docs）
+    swagger-ui:
+      path: /swagger-ui.html # Swagger UI 页面访问路径（最终访问：http://localhost:8080/swagger-ui.html）
+      operations-sorter: method # 接口排序方式：按 HTTP 方法（GET/POST/PUT/DELETE）排序
+      tags-sorter: alpha # 接口标签排序方式：按字母顺序排序
+
+# 5. MyBatis 核心配置（适配 XML 映射和实体类）
+mybatis:
+  mapper-locations: classpath:mappers/*.xml # MyBatis XML 映射文件存放路径（resources/mappers 目录下的所有 .xml 文件）
+  type-aliases-package: com.example.mybatismldemo.entity # 实体类别名包（简化 XML 中 resultType 写法，无需写全类名）
+  configuration:
+    map-underscore-to-camel-case: true # 开启下划线转驼峰（数据库字段 user_name → 实体类 userName，无需手动映射）
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 打印 SQL 日志（开发环境调试用，生产环境可关闭）
+    default-fetch-size: 100 # 默认查询批量获取条数（优化查询性能）
+    default-statement-timeout: 30 # SQL 执行超时时间（30 秒，避免慢查询阻塞）
