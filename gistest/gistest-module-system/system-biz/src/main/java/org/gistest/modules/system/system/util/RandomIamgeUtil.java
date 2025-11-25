@@ -1,0 +1,107 @@
+package org.gistest.modules.system.system.util;
+
+import jakarta.servlet.http.HttpServletResponse;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.http.HttpRequest;
+import java.security.SecureRandom;
+import java.util.Random;
+
+public class RandImageUtil {
+    /**
+     * 定义图形大小
+     */
+    private static final int WIDTH = 105;
+    /**
+     * 定义图形大小
+     */
+    private static final int HEIGHT = 35;
+    /**
+     * 定义干扰线数量
+     */
+    private static final int COUNT = 200;
+    /**
+     * 干扰线的长度=1.414*lineWidth
+     */
+    private static final int LINE_WIDTH = 2;
+
+    /**
+     * 图片格式
+     */
+    private static final String IMG_FORMAT = "JPEG";
+    /**
+     * base64 图片前缀
+     */
+    private static final String BASE64_PRE = "data:image/jpg;base64,";
+    /**
+     * 直接通过response 返回图片
+     * @param response
+     * @param resultCode
+     * @throws IOException
+     */
+    public static void generate(HttpServletResponse response, String resultCode) throw IOException {
+        BufferedImage image = getImageBuffer(resultCode);
+    }
+
+    public static BufferedImage getImageBuffer(String resultCode) {
+        final BufferedImage image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+        final Graphics2D graphics = (Graphics2D) image.getGraphics();
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(0, 0, WIDTH, HEIGHT);
+        graphics.drawRect(0, 0, WIDTH -1, HEIGHT - 1);
+
+        SecureRandom random;
+        try {
+            random = SecureRandom.getInstance("SHA1PRNG");
+        } catch( Exception e) {
+            random = new SecureRandom();
+        }
+
+        for (int i = 0; i < COUNT; i++) {
+            // ---3
+            graphics.setColor(getRandColor(150, 200));
+
+            // 保证画在边框之内
+            final int x = random.nextInt(WIDTH - LINE_WIDTH - 1) + 1;
+            final int y = random.nextInt(HEIGHT - LINE_WIDTH - 1) + 1;
+            final int xl = random.nextInt(LINE_WIDTH);
+            final int yl = random.nextInt(LINE_WIDTH);
+            graphics.drawLine(x, y, x + xl, y + yl);
+        }
+        // 取随机产生的认证码
+        for (int i = 0; i < resultCode.length(); i++) {
+            // 将认证码显示到图象中,调用函数出来的颜色相同，可能是因为种子太接近，所以只能直接生成
+            // graphics.setColor(new Color(20 + random.nextInt(130), 20 + random
+            // .nextInt(130), 20 + random.nextInt(130)));
+            // 设置字体颜色
+            graphics.setColor(Color.BLACK);
+            // 设置字体样式
+//			graphics.setFont(new Font("Arial Black", Font.ITALIC, 18));
+            graphics.setFont(new Font("Times New Roman", Font.BOLD, 24));
+            // 设置字符，字符间距，上边距
+            graphics.drawString(String.valueOf(resultCode.charAt(i)), (23 * i) + 8, 26);
+        }
+        // 图象生效
+        graphics.dispose();
+        return image;
+    }
+
+    private static Color getRandColor(int fc, int bc) { // 取得给定范围随机颜色
+        final Random random = new Random();
+        int length = 255;
+        if (fc > length) {
+            fc = length;
+        }
+        if (bc > length) {
+            bc = length;
+        }
+
+        final int r = fc + random.nextInt(bc - fc);
+        final int g = fc + random.nextInt(bc - fc);
+        final int b = fc + random.nextInt(bc - fc);
+
+        return new Color(r, g, b);
+    }
+}

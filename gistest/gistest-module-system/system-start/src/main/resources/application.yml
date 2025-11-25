@@ -26,7 +26,7 @@ spring:
         max-idle: 8   # 连接池中的最大空闲连接
         min-idle: 0   # 连接池中的最小空闲连接
 
-  # 4. Springdoc OpenAPI 配置（Swagger UI 文档）
+  # 4. Springdoc OpenAPI 配置
   doc:
     api-docs:
       path: /api-docs # API 文档数据接口路径（默认 /api-docs）
@@ -44,3 +44,21 @@ mybatis:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 打印 SQL 日志（开发环境调试用，生产环境可关闭）
     default-fetch-size: 100 # 默认查询批量获取条数（优化查询性能）
     default-statement-timeout: 30 # SQL 执行超时时间（30 秒，避免慢查询阻塞）
+
+springdoc:
+  # 文档扫描配置
+  packages-to-scan: org.gistest.controller # 只扫描指定包下的 Controller（可选，默认扫描所有）
+  paths-to-match: /api/**,/v1/** # 只生成匹配路径的接口文档（可选）
+  # OpenAPI 3.x 规范配置
+  openapi:
+    info:
+      title: "GIS 测试项目 API 文档" # 文档标题
+      version: "1.0.0" # 接口版本
+      description: "基于 SpringDoc OpenAPI 自动生成的 GIS 项目接口文档，支持在线调试" # 文档描述
+      contact: # 联系人信息（可选）
+        name: "Your Name"
+        email: "your@email.com"
+        url: "https://github.com/your-repo"
+    servers: # 接口服务器地址（可选，默认取当前服务地址）
+      - url: "http://localhost:8080"
+        description: "本地开发环境"
