@@ -2,11 +2,13 @@ package org.gistest.modules.system.system.util;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.net.http.HttpRequest;
 import java.security.SecureRandom;
+import java.util.Base64;
 import java.util.Random;
 
 public class RandImageUtil {
@@ -41,8 +43,20 @@ public class RandImageUtil {
      * @param resultCode
      * @throws IOException
      */
-    public static void generate(HttpServletResponse response, String resultCode) throw IOException {
+    public static void generate(HttpServletResponse response, String resultCode) throws IOException {
         BufferedImage image = getImageBuffer(resultCode);
+        ImageIO.write(image, IMG_FORMAT, response.getOutputStream());
+    }
+
+    public static String generate(String resultCode) throws IOException {
+        BufferedImage image = getImageBuffer(resultCode);
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        //写入流中
+        ImageIO.write(image, IMG_FORMAT, byteStream);
+        byte[] bytes = byteStream.toByteArray();
+        String base64 = Base64.getEncoder().encodeToString(bytes).trim();
+        base64 = base64.replaceAll("\n", "").replaceAll("\r", "");
+        return BASE64_PRE + base64;
     }
 
     public static BufferedImage getImageBuffer(String resultCode) {

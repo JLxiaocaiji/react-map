@@ -41,6 +41,11 @@ public class LoginController {
             redisUtil.set(realKey, lowerCaseCode, 60);
             log.info("获取验证码，Redis key = {}，checkCode = {}", realKey, code);
             String base64 = RandImageUtil.generate(code);
+        }  catch (Exception e) {
+            log.error(e.getMessage(), e);
+            res.error500("获取验证码失败,请检查redis配置!");
+            return res;
         }
+        return res;
     }
 }
